@@ -28,22 +28,24 @@ export default function PODetail() {
 
   return (
     <>
-      <PageHeader
-        title={po.poNumber}
-        action={
-          po.invoiceId ? (
-            <Button variant="outline" onClick={() => navigate(`/invoices/${po.invoiceId}`)}>
-              View Invoice
-            </Button>
-          ) : (
-            isOfficer && (
-              <Button variant="blue" onClick={handleGenInvoice} disabled={invoiceMutation.isPending}>
-                {invoiceMutation.isPending ? <Spinner /> : 'Generate Invoice'}
+      <div className="print:hidden">
+        <PageHeader
+          title={po.poNumber}
+          action={
+            po.invoiceId ? (
+              <Button variant="outline" onClick={() => navigate(`/invoices/${po.invoiceId}`)}>
+                View Invoice
               </Button>
+            ) : (
+              isOfficer && (
+                <Button variant="blue" onClick={handleGenInvoice} disabled={invoiceMutation.isPending}>
+                  {invoiceMutation.isPending ? <Spinner /> : 'Generate Invoice'}
+                </Button>
+              )
             )
-          )
-        }
-      />
+          }
+        />
+      </div>
       <Card className="p-6">
         <div className="mb-5 flex flex-wrap justify-between gap-4">
           <div>

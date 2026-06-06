@@ -14,8 +14,8 @@ import api from '../../services/api.js';
 export default function QuotationComparison() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data: rfqData } = useRFQDetail(id);
-  const { data: quotData, isLoading } = useRFQQuotations(id);
+  const { data: rfqData, isLoading: isRfqLoading } = useRFQDetail(id);
+  const { data: quotData, isLoading: isQuotLoading } = useRFQQuotations(id);
   const rfq = rfqData?.data;
   const rawQuotations = quotData?.data || [];
 
@@ -47,7 +47,7 @@ export default function QuotationComparison() {
     return sorted;
   }, [rawQuotations, sortField, sortDir]);
 
-  if (isLoading) return <div className="flex justify-center py-20"><Spinner /></div>;
+  if (isRfqLoading || isQuotLoading) return <div className="flex justify-center py-20"><Spinner /></div>;
 
   const lowestPrice = quotations.length ? Math.min(...quotations.map((q) => q.price)) : 0;
   const fastestDelivery = quotations.length ? Math.min(...quotations.map((q) => q.deliveryDays)) : 0;
@@ -73,7 +73,7 @@ export default function QuotationComparison() {
     <>
       <PageHeader title="Quotation Comparison" description="Side-by-side vendor comparison." />
       <Card className="mb-4 p-4 text-sm text-brand-muted">
-        {rfq?.title} · Quantity {rfq?.quantity} · Deadline {new Date(rfq?.deadline).toLocaleDateString()}
+        {rfq?.title} · Quantity {rfq?.quantity} · Deadline {rfq?.deadline ? new Date(rfq.deadline).toLocaleDateString() : '—'}
       </Card>
       {quotations.length === 0 ? (
         <Card className="p-6 text-center text-brand-muted">No quotations submitted yet.</Card>

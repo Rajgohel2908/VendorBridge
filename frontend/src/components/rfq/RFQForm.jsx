@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import Button from '../ui/Button.jsx';
 import Card from '../ui/Card.jsx';
@@ -6,12 +6,26 @@ import Input from '../ui/Input.jsx';
 import Spinner from '../ui/Spinner.jsx';
 import { useVendors } from '../../hooks/useVendors.js';
 
-export default function RFQForm({ onSubmit, isLoading }) {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+export default function RFQForm({ onSubmit, isLoading, defaultValues }) {
+  const { register, handleSubmit, formState: { errors }, reset } = useForm();
   const { data: vendorsData } = useVendors();
   const vendors = vendorsData?.data || [];
   const [selectedVendors, setSelectedVendors] = useState([]);
   const [file, setFile] = useState(null);
+
+  useEffect(() => {
+    if (defaultValues) {
+      reset({
+        title: defaultValues.title,
+        description: defaultValues.description || '',
+        quantity: defaultValues.quantity,
+        deadline: defaultValues.deadline ? new Date(defaultValues.deadline).toISOString().split('T')[0] : '',
+      });
+      if (defaultValues.vendors) {
+        setSelectedVendors(defaultValues.vendors.map((v) => (typeof v === 'object' ? v._id : v)));
+      }
+    }
+  }, [defaultValues, reset]);
 
   const toggleVendor = (id) => {
     setSelectedVendors((prev) => prev.includes(id) ? prev.filter((v) => v !== id) : [...prev, id]);
@@ -65,7 +79,11 @@ export default function RFQForm({ onSubmit, isLoading }) {
         )}
         <div className="mt-5 flex gap-3">
           <Button variant="blue" type="submit" disabled={isLoading}>
-            {isLoading ? <><Spinner /> Creating…</> : 'Create RFQ'}
+            {isLoading ? (
+              defaultValues ? <><Spinner /> Saving…</> : <><Spinner /> Creating…</>
+            ) : (
+              defaultValues ? 'Save Changes' : 'Create RFQ'
+            )}
           </Button>
         </div>
       </Card>

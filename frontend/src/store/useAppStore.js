@@ -11,9 +11,27 @@ function decodeToken(token) {
   }
 }
 
+const initialToken = localStorage.getItem('vendorbridge_token');
+let initialUser = null;
+
+if (initialToken) {
+  const payload = decodeToken(initialToken);
+  if (payload) {
+    initialUser = {
+      id: payload.id,
+      email: payload.email,
+      role: payload.role,
+      vendorId: payload.vendorId,
+      name: payload.name || payload.email,
+    };
+  } else {
+    localStorage.removeItem('vendorbridge_token');
+  }
+}
+
 export const useAppStore = create((set, get) => ({
-  user: null,
-  token: localStorage.getItem('vendorbridge_token'),
+  user: initialUser,
+  token: initialUser ? initialToken : null,
   notifications: [],
 
   isAuthenticated: () => {

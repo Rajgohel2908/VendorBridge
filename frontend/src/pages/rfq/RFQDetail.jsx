@@ -35,7 +35,12 @@ export default function RFQDetail() {
           <div className="flex gap-2">
             {isVendor && rfq.status === 'OPEN' && !existingQuote && <Link to={`/rfq/${id}/quotations`}><Button variant="blue">Submit Quotation</Button></Link>}
             {isVendor && existingQuote && <Link to={`/quotations/${existingQuote._id}`}><Button variant="outline">View Quotation</Button></Link>}
-            {isOfficer && <Link to={`/rfq/${id}/compare`}><Button variant="outline">Compare Quotations</Button></Link>}
+            {isOfficer && (
+              <>
+                <Link to={`/rfq/${id}/edit`}><Button variant="outline">Edit RFQ</Button></Link>
+                <Link to={`/rfq/${id}/compare`}><Button variant="outline">Compare Quotations</Button></Link>
+              </>
+            )}
           </div>
         }
       />
