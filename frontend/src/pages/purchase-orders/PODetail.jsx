@@ -21,7 +21,16 @@ export default function PODetail() {
   if (!po) return <p className="py-10 text-center text-brand-muted">Purchase order not found.</p>;
 
   const handleGenInvoice = () => {
-    invoiceMutation.mutate({ poId: po._id }, { onSuccess: (res) => navigate(`/invoices/${res.data._id}`) });
+    invoiceMutation.mutate(
+      { poId: po._id },
+      {
+        onSuccess: (res) => {
+          // res.data is the Axios response body: { data: invoice }
+          const invoiceId = res?.data?._id || res?._id;
+          navigate(`/invoices/${invoiceId}`);
+        },
+      }
+    );
   };
 
   const isOfficer = user?.role === 'PROCUREMENT_OFFICER';

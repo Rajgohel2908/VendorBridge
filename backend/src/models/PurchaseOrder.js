@@ -21,6 +21,7 @@ const purchaseOrderSchema = new mongoose.Schema(
     taxAmount: { type: Decimal128, required: true },
     totalAmount: { type: Decimal128, required: true },
     status: { type: String, enum: ['GENERATED', 'SENT', 'COMPLETED'], default: 'GENERATED' },
+    invoiceId: { type: mongoose.Schema.Types.ObjectId, ref: 'Invoice', default: null },
   },
   { timestamps: true },
 );

@@ -63,6 +63,9 @@ export async function createInvoice(req, res, next) {
       emailDeliveryStatus: 'Pending',
     });
 
+    // ✅ Link invoice back to the PO so PODetail can show "View Invoice"
+    await PurchaseOrder.findByIdAndUpdate(po._id, { invoiceId: invoice._id });
+
     await logActivity({ userId: req.user.id, action: 'Generated Invoice', entity: 'INVOICE', entityId: invoice._id });
 
     return res.status(201).json({ data: invoice });
