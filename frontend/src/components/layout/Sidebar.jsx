@@ -65,10 +65,18 @@ export default function Sidebar({ open, onClose }) {
               }`
             }
           >
-            <span className="grid h-8 w-8 place-items-center rounded-md bg-white/10 text-cyan-100 transition group-hover:bg-white/15">
-              <Icon size={17} />
-            </span>
-            {label}
+            {({ isActive }) => (
+              <>
+                <span className={`grid h-8 w-8 place-items-center rounded-md transition ${
+                  isActive
+                    ? 'bg-brand-primary/10 text-brand-primary'
+                    : 'bg-white/10 text-cyan-100 group-hover:bg-white/15'
+                }`}>
+                  <Icon size={17} />
+                </span>
+                {label}
+              </>
+            )}
           </NavLink>
         ))}
       </nav>
