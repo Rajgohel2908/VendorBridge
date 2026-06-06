@@ -21,7 +21,11 @@ function readDecimal(val) {
 
 export async function listInvoices(req, res, next) {
   try {
-    const invoices = await Invoice.find()
+    const filter = {};
+    if (req.user.role === 'VENDOR') {
+      filter.vendorId = req.user.vendorId;
+    }
+    const invoices = await Invoice.find(filter)
       .populate('vendorId', 'name email')
       .populate('poId', 'poNumber')
       .sort({ createdAt: -1 });
@@ -79,6 +83,12 @@ export async function getInvoice(req, res, next) {
       });
 
     if (!invoice) return res.status(404).json({ message: 'Invoice not found' });
+
+    // Ensure Vendor only sees their own Invoice
+    if (req.user.role === 'VENDOR' && invoice.vendorId && String(invoice.vendorId._id) !== String(req.user.vendorId)) {
+      return res.status(403).json({ message: 'Insufficient permissions' });
+    }
+
     return res.json({ data: invoice });
   } catch (err) {
     return next(err);

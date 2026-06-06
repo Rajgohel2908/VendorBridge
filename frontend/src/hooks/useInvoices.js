@@ -9,7 +9,13 @@ export const useInvoiceDetail = (id) =>
 
 export const useCreateInvoice = () => {
   const qc = useQueryClient();
-  return useMutation({ mutationFn: invoiceService.create, onSuccess: () => qc.invalidateQueries({ queryKey: ['invoices'] }) });
+  return useMutation({
+    mutationFn: invoiceService.create,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['invoices'] });
+      qc.invalidateQueries({ queryKey: ['purchase-orders'] });
+    },
+  });
 };
 
 export const useEmailInvoice = () => {

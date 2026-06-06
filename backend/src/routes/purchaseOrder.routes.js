@@ -10,8 +10,8 @@ import allowRoles from '../middleware/role.middleware.js';
 const router = Router();
 
 router.use(authMiddleware);
-router.get('/', allowRoles('PROCUREMENT_OFFICER'), listPurchaseOrders);
+router.get('/', allowRoles('PROCUREMENT_OFFICER', 'VENDOR', 'MANAGER', 'ADMIN'), listPurchaseOrders);
 router.post('/', allowRoles('PROCUREMENT_OFFICER'), createPurchaseOrder);
-router.get('/:id', allowRoles('PROCUREMENT_OFFICER', 'VENDOR'), getPurchaseOrder);
+router.get('/:id', allowRoles('PROCUREMENT_OFFICER', 'VENDOR', 'MANAGER', 'ADMIN'), getPurchaseOrder);
 
 export default router;

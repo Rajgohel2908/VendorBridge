@@ -5,6 +5,7 @@ import Badge from '../../components/ui/Badge.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
 import { useRFQDetail } from '../../hooks/useRFQ.js';
+import { useQuotations } from '../../hooks/useQuotations.js';
 import { formatDate } from '../../utils/formatDate.js';
 import { useAppStore } from '../../store/useAppStore.js';
 
@@ -21,6 +22,9 @@ export default function RFQDetail() {
 
   const isVendor = user?.role === 'VENDOR';
   const isOfficer = user?.role === 'PROCUREMENT_OFFICER';
+  
+  const { data: myQuotes } = useQuotations();
+  const existingQuote = isVendor ? myQuotes?.data?.find(q => q.rfqId?._id === id) : null;
 
   return (
     <>
@@ -28,7 +32,8 @@ export default function RFQDetail() {
         title={rfq.title}
         action={
           <div className="flex gap-2">
-            {isVendor && rfq.status === 'OPEN' && <Link to={`/rfq/${id}/quotations`}><Button variant="blue">Submit Quotation</Button></Link>}
+            {isVendor && rfq.status === 'OPEN' && !existingQuote && <Link to={`/rfq/${id}/quotations`}><Button variant="blue">Submit Quotation</Button></Link>}
+            {isVendor && existingQuote && <Link to={`/quotations/${existingQuote._id}`}><Button variant="outline">View Quotation</Button></Link>}
             {isOfficer && <Link to={`/rfq/${id}/compare`}><Button variant="outline">Compare Quotations</Button></Link>}
           </div>
         }
@@ -47,7 +52,7 @@ export default function RFQDetail() {
           </div>
           {rfq.attachment && (
             <div className="mt-4">
-              <a href={`http://localhost:5000${rfq.attachment}`} target="_blank" rel="noreferrer" className="text-sm text-brand-primary hover:underline">📎 View Attachment</a>
+              <a href={`http://127.0.0.1:5000${rfq.attachment}`} target="_blank" rel="noreferrer" className="text-sm text-brand-primary hover:underline">📎 View Attachment</a>
             </div>
           )}
         </Card>

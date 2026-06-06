@@ -40,7 +40,7 @@ async function seed() {
 
   // Create vendors
   const vendors = await Vendor.insertMany([
-    { name: 'Acme Supplies', category: 'Raw Materials', gstNumber: '22AAAAA0000A1Z5', email: 'ops@acme.test', phone: '+1 555 0100', address: '123 Industrial Ave, Chicago, IL', status: 'ACTIVE' },
+    { _id: new mongoose.Types.ObjectId('6a23c662b671344e9fafcdbb'), name: 'Acme Supplies', category: 'Raw Materials', gstNumber: '22AAAAA0000A1Z5', email: 'ops@acme.test', phone: '+1 555 0100', address: '123 Industrial Ave, Chicago, IL', status: 'ACTIVE' },
     { name: 'Metro Tools', category: 'Equipment', gstNumber: '27BBBBB1111B2Z6', email: 'sales@metro.test', phone: '+1 555 0200', address: '456 Commerce St, Detroit, MI', status: 'ACTIVE' },
     { name: 'Northline Traders', category: 'Office Supplies', gstNumber: '33CCCCC2222C3Z7', email: 'info@northline.test', phone: '+1 555 0300', address: '789 Trade Blvd, New York, NY', status: 'ACTIVE' },
     { name: 'Prime Components', category: 'Electronics', gstNumber: '44DDDDD3333D4Z8', email: 'procurement@prime.test', phone: '+1 555 0400', address: '321 Tech Park, San Jose, CA', status: 'ACTIVE' },
@@ -50,10 +50,10 @@ async function seed() {
 
   // Create users
   const users = await User.insertMany([
-    { name: 'Aarav Sharma', email: 'aarav@vendorbridge.test', password, role: 'ADMIN' },
-    { name: 'Priya Patel', email: 'priya@vendorbridge.test', password, role: 'PROCUREMENT_OFFICER' },
-    { name: 'Karan Mehta', email: 'karan@vendorbridge.test', password, role: 'MANAGER' },
-    { name: 'Vendor User', email: 'vendor@acme.test', password, role: 'VENDOR', vendorId: vendors[0]._id },
+    { _id: new mongoose.Types.ObjectId('6a23c662b671344e9fafcda1'), name: 'Aarav Sharma', email: 'aarav@vendorbridge.test', password, role: 'ADMIN' },
+    { _id: new mongoose.Types.ObjectId('6a23c662b671344e9fafcda2'), name: 'Priya Patel', email: 'priya@vendorbridge.test', password, role: 'PROCUREMENT_OFFICER' },
+    { _id: new mongoose.Types.ObjectId('6a23c662b671344e9fafcda3'), name: 'Karan Mehta', email: 'karan@vendorbridge.test', password, role: 'MANAGER' },
+    { _id: new mongoose.Types.ObjectId('6a23c662b671344e9fafcda4'), name: 'Vendor User', email: 'vendor@acme.test', password, role: 'VENDOR', vendorId: vendors[0]._id },
     { name: 'Metro Vendor', email: 'vendor@metro.test', password, role: 'VENDOR', vendorId: vendors[1]._id },
   ]);
   const [admin, officer, manager, vendorUser1, vendorUser2] = users;

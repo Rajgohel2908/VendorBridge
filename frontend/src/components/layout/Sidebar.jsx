@@ -17,15 +17,14 @@ import { canAccess } from '../../utils/roleGuard.js';
 
 const items = [
   { to: '/dashboard', label: 'Dashboard', icon: Home, roles: ['ADMIN', 'PROCUREMENT_OFFICER', 'MANAGER', 'VENDOR'] },
-  { to: '/vendors', label: 'Vendors', icon: Users, roles: ['ADMIN', 'PROCUREMENT_OFFICER'] },
-  { to: '/rfq', label: 'RFQs', icon: FileQuestion, roles: ['ADMIN', 'PROCUREMENT_OFFICER', 'MANAGER', 'VENDOR'] },
-  { to: '/quotations', label: 'Quotations', icon: FileText, roles: ['VENDOR'] },
-  { to: '/approvals', label: 'Approvals', icon: ClipboardCheck, roles: ['MANAGER'] },
-  { to: '/purchase-orders', label: 'Purchase Orders', icon: ShoppingCart, roles: ['ADMIN', 'PROCUREMENT_OFFICER'] },
-  { to: '/invoices', label: 'Invoices', icon: ReceiptText, roles: ['ADMIN', 'PROCUREMENT_OFFICER'] },
-  { to: '/activity', label: 'Activity', icon: Activity, roles: ['ADMIN', 'PROCUREMENT_OFFICER', 'MANAGER', 'VENDOR'] },
-  { to: '/reports', label: 'Reports', icon: BarChart3, roles: ['ADMIN', 'MANAGER'] },
-  { to: '/admin', label: 'Admin', icon: Shield, roles: ['ADMIN'] },
+  { to: '/vendors', label: 'Vendors', icon: Users, roles: ['ADMIN'] }, // Admin: Manage vendors
+  { to: '/rfq', label: 'RFQs', icon: FileQuestion, roles: ['ADMIN', 'PROCUREMENT_OFFICER', 'MANAGER', 'VENDOR'] }, // PO: Create RFQs, Vendor: Track RFQ status, Manager: Monitor procurement workflows
+  { to: '/quotations', label: 'Quotations', icon: FileText, roles: ['VENDOR'] }, // Vendor: Submit quotations
+  { to: '/approvals', label: 'Approvals', icon: ClipboardCheck, roles: ['MANAGER'] }, // Manager: Approve or reject requests
+  { to: '/purchase-orders', label: 'Purchase Orders', icon: ShoppingCart, roles: ['ADMIN', 'PROCUREMENT_OFFICER', 'MANAGER', 'VENDOR'] }, // PO: Generate POs, Vendor: View POs, Manager: Monitor workflows
+  { to: '/invoices', label: 'Invoices', icon: ReceiptText, roles: ['ADMIN', 'PROCUREMENT_OFFICER', 'MANAGER'] }, // PO: Generate Invoices, Manager: Monitor workflows
+  { to: '/reports', label: 'Reports', icon: BarChart3, roles: ['ADMIN'] }, // Admin: View procurement analytics
+  { to: '/admin', label: 'Admin', icon: Shield, roles: ['ADMIN'] }, // Admin: Manage users
 ];
 
 export default function Sidebar({ open, onClose }) {

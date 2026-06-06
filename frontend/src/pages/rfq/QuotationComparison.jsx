@@ -7,6 +7,7 @@ import Button from '../../components/ui/Button.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
 import StarRating from '../../components/ui/StarRating.jsx';
 import { useRFQDetail, useRFQQuotations } from '../../hooks/useRFQ.js';
+import { useApprovals } from '../../hooks/useApprovals.js';
 import { formatCurrency } from '../../utils/formatCurrency.js';
 import api from '../../services/api.js';
 
@@ -58,11 +59,15 @@ export default function QuotationComparison() {
         rfqId: id,
         status: 'PENDING',
       });
-      navigate('/approvals');
+      navigate('/rfq');
     } catch (err) {
       alert('Failed to submit for approval');
     }
   };
+
+  const { data: approvalsData } = useApprovals();
+  const rfqApprovals = approvalsData?.data?.filter((a) => a.rfqId?._id === id || a.rfqId === id) || [];
+  const hasPendingOrApproved = rfqApprovals.some((a) => a.status === 'PENDING' || a.status === 'APPROVED');
 
   return (
     <>
@@ -143,8 +148,8 @@ export default function QuotationComparison() {
                 <td className="px-4 py-3 font-medium">Actions</td>
                 {quotations.map((q) => (
                   <td key={q._id} className="px-4 py-3">
-                    <Button variant="outline" onClick={() => handleSelect(q)} disabled={rfq?.status === 'CLOSED'}>
-                      {rfq?.status === 'CLOSED' ? 'Closed' : 'Select'}
+                    <Button variant="outline" onClick={() => handleSelect(q)} disabled={rfq?.status === 'CLOSED' || hasPendingOrApproved}>
+                      {rfq?.status === 'CLOSED' || hasPendingOrApproved ? 'Requested' : 'Select'}
                     </Button>
                   </td>
                 ))}

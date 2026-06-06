@@ -2,6 +2,8 @@ import mongoose from 'mongoose';
 import PurchaseOrder from '../models/PurchaseOrder.js';
 import Quotation from '../models/Quotation.js';
 import Approval from '../models/Approval.js';
+import User from '../models/User.js';
+import Invoice from '../models/Invoice.js';
 import RFQ from '../models/RFQ.js';
 import { logActivity } from '../utils/activityLogger.js';
 import { generatePONumber } from '../utils/generatePONumber.js';
@@ -10,7 +12,11 @@ const toDecimal = (value) => mongoose.Types.Decimal128.fromString(String(value))
 
 export async function listPurchaseOrders(req, res, next) {
   try {
-    const pos = await PurchaseOrder.find()
+    const filter = {};
+    if (req.user.role === 'VENDOR') {
+      filter.vendorId = req.user.vendorId;
+    }
+    const pos = await PurchaseOrder.find(filter)
       .populate('vendorId', 'name email')
       .populate('rfqId', 'title')
       .sort({ createdAt: -1 });
@@ -79,7 +85,17 @@ export async function getPurchaseOrder(req, res, next) {
       .populate('quotationId', 'price deliveryDays notes');
 
     if (!po) return res.status(404).json({ message: 'Purchase order not found' });
-    return res.json({ data: po });
+
+    // Ensure Vendor only sees their own PO
+    if (req.user.role === 'VENDOR' && po.vendorId && String(po.vendorId._id) !== String(req.user.vendorId)) {
+      return res.status(403).json({ message: 'Insufficient permissions' });
+    }
+
+    const invoice = await Invoice.findOne({ poId: po._id });
+    const poObj = po.toJSON();
+    poObj.invoiceId = invoice ? invoice._id : null;
+
+    return res.json({ data: poObj });
   } catch (err) {
     return next(err);
   }

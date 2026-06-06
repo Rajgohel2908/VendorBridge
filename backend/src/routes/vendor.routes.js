@@ -14,9 +14,9 @@ const router = Router();
 
 router.use(authMiddleware);
 router.get('/', allowRoles('ADMIN', 'PROCUREMENT_OFFICER'), listVendors);
-router.post('/', allowRoles('ADMIN', 'PROCUREMENT_OFFICER'), vendorValidator, createVendor);
-router.get('/:id', allowRoles('ADMIN', 'PROCUREMENT_OFFICER'), getVendor);
-router.put('/:id', allowRoles('ADMIN', 'PROCUREMENT_OFFICER'), vendorValidator, updateVendor);
+router.post('/', allowRoles('ADMIN'), vendorValidator, createVendor);
+router.get('/:id', allowRoles('ADMIN'), getVendor);
+router.put('/:id', allowRoles('ADMIN'), vendorValidator, updateVendor);
 router.delete('/:id', allowRoles('ADMIN'), deleteVendor);
 
 export default router;

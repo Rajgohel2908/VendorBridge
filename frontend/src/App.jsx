@@ -62,17 +62,21 @@ export default function App() {
             <Route path="/rfq/:id/compare" element={<QuotationComparison />} />
           </Route>
 
-          {/* Vendor management — Admin + Procurement Officer */}
-          <Route element={<RoleGuard roles={['ADMIN', 'PROCUREMENT_OFFICER']} />}>
+          {/* Vendor management — Admin only (Manage vendors) */}
+          <Route element={<RoleGuard roles={['ADMIN']} />}>
             <Route path="/vendors" element={<VendorList />} />
             <Route path="/vendors/new" element={<VendorNew />} />
             <Route path="/vendors/:id" element={<VendorDetail />} />
           </Route>
 
-          {/* PO & Invoices — Admin + Procurement Officer */}
-          <Route element={<RoleGuard roles={['ADMIN', 'PROCUREMENT_OFFICER']} />}>
+          {/* PO — Admin, Procurement Officer, Manager, and Vendor */}
+          <Route element={<RoleGuard roles={['ADMIN', 'PROCUREMENT_OFFICER', 'MANAGER', 'VENDOR']} />}>
             <Route path="/purchase-orders" element={<POList />} />
             <Route path="/purchase-orders/:id" element={<PODetail />} />
+          </Route>
+
+          {/* Invoices — Admin, Procurement Officer, Manager */}
+          <Route element={<RoleGuard roles={['ADMIN', 'PROCUREMENT_OFFICER', 'MANAGER']} />}>
             <Route path="/invoices" element={<InvoiceList />} />
             <Route path="/invoices/:id" element={<InvoiceDetail />} />
           </Route>
@@ -89,13 +93,10 @@ export default function App() {
             <Route path="/approvals/:id" element={<ApprovalDetail />} />
           </Route>
 
-          {/* Reports — Admin + Manager */}
-          <Route element={<RoleGuard roles={['ADMIN', 'MANAGER']} />}>
+          {/* Reports — Admin only (View procurement analytics) */}
+          <Route element={<RoleGuard roles={['ADMIN']} />}>
             <Route path="/reports" element={<Reports />} />
           </Route>
-
-          {/* Activity logs — all authenticated */}
-          <Route path="/activity" element={<ActivityLogs />} />
 
           {/* Admin panel — Admin only */}
           <Route element={<RoleGuard roles={['ADMIN']} />}>

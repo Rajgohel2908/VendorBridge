@@ -8,11 +8,13 @@ import Spinner from '../../components/ui/Spinner.jsx';
 import QuickActions from '../../components/dashboard/QuickActions.jsx';
 import { formatCurrency } from '../../utils/formatCurrency.js';
 import { formatDate } from '../../utils/formatDate.js';
+import { useAppStore } from '../../store/useAppStore.js';
 
 const statusTone = { GENERATED: 'blue', SENT: 'amber', COMPLETED: 'green', PAID: 'green', OPEN: 'blue', PENDING: 'amber' };
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const user = useAppStore((s) => s.user);
   const { data, isLoading } = useQuery({
     queryKey: ['reports'],
     queryFn: () => api.get('/reports').then((r) => r.data),
@@ -34,14 +36,21 @@ export default function Dashboard() {
           <p className="text-3xl font-semibold">{stats.activeRFQs ?? 0}</p>
           <p className="mt-1 text-sm text-brand-muted">Active RFQs</p>
         </Card>
-        <Card
-          className="cursor-pointer border-l-4 border-l-brand-warning p-4 transition-shadow hover:shadow-md"
-          onClick={() => navigate('/approvals')}
-        >
-          <p className="text-3xl font-semibold">{stats.pendingApprovals ?? 0}</p>
-          <p className="mt-1 text-sm text-brand-muted">Pending Approvals</p>
-          <p className="mt-1 text-xs text-brand-primary">Click to view →</p>
-        </Card>
+        {(user?.role === 'MANAGER' || user?.role === 'ADMIN') ? (
+          <Card
+            className="cursor-pointer border-l-4 border-l-brand-warning p-4 transition-shadow hover:shadow-md"
+            onClick={() => navigate('/approvals')}
+          >
+            <p className="text-3xl font-semibold">{stats.pendingApprovals ?? 0}</p>
+            <p className="mt-1 text-sm text-brand-muted">Pending Approvals</p>
+            <p className="mt-1 text-xs text-brand-primary">Click to view →</p>
+          </Card>
+        ) : (
+          <Card className="border-l-4 border-l-brand-warning p-4">
+            <p className="text-3xl font-semibold">{stats.pendingApprovals ?? 0}</p>
+            <p className="mt-1 text-sm text-brand-muted">Pending Approvals</p>
+          </Card>
+        )}
         <Card className="border-l-4 border-l-brand-success p-4">
           <p className="text-3xl font-semibold">{stats.totalPOs ?? 0}</p>
           <p className="mt-1 text-sm text-brand-muted">Purchase Orders</p>

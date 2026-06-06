@@ -7,10 +7,12 @@ import { usePODetail } from '../../hooks/usePurchaseOrders.js';
 import { useCreateInvoice } from '../../hooks/useInvoices.js';
 import { formatCurrency } from '../../utils/formatCurrency.js';
 import { formatDate } from '../../utils/formatDate.js';
+import { useAppStore } from '../../store/useAppStore.js';
 
 export default function PODetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const user = useAppStore((s) => s.user);
   const { data, isLoading } = usePODetail(id);
   const invoiceMutation = useCreateInvoice();
   const po = data?.data;
@@ -19,17 +21,27 @@ export default function PODetail() {
   if (!po) return <p className="py-10 text-center text-brand-muted">Purchase order not found.</p>;
 
   const handleGenInvoice = () => {
-    invoiceMutation.mutate({ poId: po._id }, { onSuccess: (res) => navigate(`/invoices/${res.data.data._id}`) });
+    invoiceMutation.mutate({ poId: po._id }, { onSuccess: (res) => navigate(`/invoices/${res.data._id}`) });
   };
+
+  const isOfficer = user?.role === 'PROCUREMENT_OFFICER';
 
   return (
     <>
       <PageHeader
         title={po.poNumber}
         action={
-          <Button variant="blue" onClick={handleGenInvoice} disabled={invoiceMutation.isPending}>
-            {invoiceMutation.isPending ? <Spinner /> : 'Generate Invoice'}
-          </Button>
+          po.invoiceId ? (
+            <Button variant="outline" onClick={() => navigate(`/invoices/${po.invoiceId}`)}>
+              View Invoice
+            </Button>
+          ) : (
+            isOfficer && (
+              <Button variant="blue" onClick={handleGenInvoice} disabled={invoiceMutation.isPending}>
+                {invoiceMutation.isPending ? <Spinner /> : 'Generate Invoice'}
+              </Button>
+            )
+          )
         }
       />
       <Card className="p-6">

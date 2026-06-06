@@ -22,7 +22,8 @@ export default function Signup() {
         navigate('/dashboard');
       },
       onError: (err) => {
-        setApiError(err.response?.data?.message || 'Registration failed');
+        console.error('Registration error details:', err);
+        setApiError(err.response?.data?.message || err.message || 'Registration failed');
       },
     });
   };

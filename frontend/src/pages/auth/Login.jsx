@@ -22,7 +22,8 @@ export default function Login() {
         navigate('/dashboard');
       },
       onError: (err) => {
-        setApiError(err.response?.data?.message || 'Login failed');
+        console.error('Login error details:', err);
+        setApiError(err.response?.data?.message || err.message || 'Login failed');
       },
     });
   };

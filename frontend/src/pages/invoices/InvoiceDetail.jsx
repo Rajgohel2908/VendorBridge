@@ -12,11 +12,13 @@ import InvoiceDocument from '../../components/invoices/InvoiceDocument.jsx';
 import { useInvoiceDetail, useEmailInvoice } from '../../hooks/useInvoices.js';
 import { formatCurrency } from '../../utils/formatCurrency.js';
 import { formatDate } from '../../utils/formatDate.js';
+import { useAppStore } from '../../store/useAppStore.js';
 
 const statusTone = { GENERATED: 'blue', SENT: 'amber', PAID: 'green' };
 
 export default function InvoiceDetail() {
   const { id } = useParams();
+  const user = useAppStore((s) => s.user);
   const { data, isLoading } = useInvoiceDetail(id);
   const emailMutation = useEmailInvoice();
   const [showEmail, setShowEmail] = useState(false);
@@ -30,6 +32,8 @@ export default function InvoiceDetail() {
     emailMutation.mutate({ id, data: emailForm }, { onSuccess: () => setShowEmail(false) });
   };
 
+  const isOfficer = user?.role === 'PROCUREMENT_OFFICER';
+
   return (
     <>
       <PageHeader
@@ -42,7 +46,9 @@ export default function InvoiceDetail() {
               )}
             </PDFDownloadLink>
             <Button variant="outline" onClick={() => window.print()}>Print</Button>
-            <Button variant="blue" onClick={() => { setEmailForm({ email: inv.vendorId?.email || '', subject: `Invoice ${inv.invoiceNo}`, notes: '' }); setShowEmail(true); }}>Send via Email</Button>
+            {isOfficer && (
+              <Button variant="blue" onClick={() => { setEmailForm({ email: inv.vendorId?.email || '', subject: `Invoice ${inv.invoiceNo}`, notes: '' }); setShowEmail(true); }}>Send via Email</Button>
+            )}
           </div>
         }
       />
