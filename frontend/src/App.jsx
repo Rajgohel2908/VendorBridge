@@ -81,8 +81,8 @@ export default function App() {
             <Route path="/invoices/:id" element={<InvoiceDetail />} />
           </Route>
 
-          {/* Quotation submission — Vendor only */}
-          <Route element={<RoleGuard roles={['VENDOR']} />}>
+          {/* Quotations — All authenticated roles */}
+          <Route element={<RoleGuard roles={['ADMIN', 'MANAGER', 'PROCUREMENT_OFFICER', 'VENDOR']} />}>
             <Route path="/quotations" element={<QuotationList />} />
             <Route path="/rfq/:id/quotations" element={<QuotationSubmit />} />
           </Route>
