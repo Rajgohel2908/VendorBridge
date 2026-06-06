@@ -15,11 +15,11 @@ import { rfqValidator } from '../validators/rfq.validator.js';
 const router = Router();
 
 router.use(authMiddleware);
-router.get('/', allowRoles('PROCUREMENT_OFFICER', 'MANAGER', 'ADMIN'), listRFQs);
-router.post('/', allowRoles('PROCUREMENT_OFFICER'), upload.single('attachment'), rfqValidator, createRFQ);
-router.get('/:id/quotations', allowRoles('PROCUREMENT_OFFICER'), listRFQQuotations);
-router.get('/:id', allowRoles('PROCUREMENT_OFFICER', 'VENDOR'), getRFQ);
-router.put('/:id', allowRoles('PROCUREMENT_OFFICER'), rfqValidator, updateRFQ);
+router.get('/', allowRoles('PROCUREMENT_OFFICER', 'MANAGER', 'ADMIN', 'VENDOR'), listRFQs);
+router.post('/', allowRoles('PROCUREMENT_OFFICER'), upload.single('attachment'), createRFQ);
+router.get('/:id', allowRoles('PROCUREMENT_OFFICER', 'VENDOR', 'MANAGER', 'ADMIN'), getRFQ);
+router.put('/:id', allowRoles('PROCUREMENT_OFFICER'), upload.single('attachment'), updateRFQ);
 router.delete('/:id', allowRoles('PROCUREMENT_OFFICER'), deleteRFQ);
+router.get('/:id/quotations', allowRoles('PROCUREMENT_OFFICER', 'MANAGER', 'ADMIN'), listRFQQuotations);
 
 export default router;

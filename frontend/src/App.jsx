@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
+import { useAppStore } from './store/useAppStore.js';
 import DashboardLayout from './components/layout/DashboardLayout.jsx';
 import Login from './pages/auth/Login.jsx';
 import Signup from './pages/auth/Signup.jsx';
@@ -23,6 +25,12 @@ import ActivityLogs from './pages/activity/ActivityLogs.jsx';
 import Reports from './pages/reports/Reports.jsx';
 
 export default function App() {
+  const initAuth = useAppStore((s) => s.initAuth);
+
+  useEffect(() => {
+    initAuth();
+  }, [initAuth]);
+
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
@@ -37,9 +45,9 @@ export default function App() {
         <Route path="/rfq" element={<RFQList />} />
         <Route path="/rfq/new" element={<RFQNew />} />
         <Route path="/rfq/:id" element={<RFQDetail />} />
+        <Route path="/rfq/:id/compare" element={<QuotationComparison />} />
         <Route path="/rfq/:id/quotations" element={<QuotationSubmit />} />
         <Route path="/quotations" element={<QuotationList />} />
-        <Route path="/quotations/comparison" element={<QuotationComparison />} />
         <Route path="/approvals" element={<ApprovalQueue />} />
         <Route path="/approvals/:id" element={<ApprovalDetail />} />
         <Route path="/purchase-orders" element={<POList />} />
