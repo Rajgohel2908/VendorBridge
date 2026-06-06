@@ -14,6 +14,7 @@ import VendorDetail from './pages/vendors/VendorDetail.jsx';
 import RFQList from './pages/rfq/RFQList.jsx';
 import RFQNew from './pages/rfq/RFQNew.jsx';
 import RFQDetail from './pages/rfq/RFQDetail.jsx';
+import RFQEdit from './pages/rfq/RFQEdit.jsx';
 import QuotationComparison from './pages/rfq/QuotationComparison.jsx';
 import QuotationList from './pages/quotations/QuotationList.jsx';
 import QuotationSubmit from './pages/quotations/QuotationSubmit.jsx';
@@ -52,9 +53,10 @@ export default function App() {
           <Route path="/rfq" element={<RFQList />} />
           <Route path="/rfq/:id" element={<RFQDetail />} />
 
-          {/* RFQ creation — Procurement Officer only */}
+          {/* RFQ creation & editing — Procurement Officer only */}
           <Route element={<RoleGuard roles={['PROCUREMENT_OFFICER']} />}>
             <Route path="/rfq/new" element={<RFQNew />} />
+            <Route path="/rfq/:id/edit" element={<RFQEdit />} />
           </Route>
 
           {/* RFQ comparison — Procurement Officer + Manager */}

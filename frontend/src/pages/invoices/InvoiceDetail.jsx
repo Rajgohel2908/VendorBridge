@@ -36,22 +36,24 @@ export default function InvoiceDetail() {
 
   return (
     <>
-      <PageHeader
-        title={inv.invoiceNo}
-        action={
-          <div className="flex gap-2">
-            <PDFDownloadLink document={<InvoiceDocument invoice={inv} />} fileName={`${inv.invoiceNo}.pdf`}>
-              {({ loading }) => (
-                <Button variant="outline">{loading ? 'Preparing…' : 'Download PDF'}</Button>
+      <div className="print:hidden">
+        <PageHeader
+          title={inv.invoiceNo}
+          action={
+            <div className="flex gap-2">
+              <PDFDownloadLink document={<InvoiceDocument invoice={inv} />} fileName={`${inv.invoiceNo}.pdf`}>
+                {({ loading }) => (
+                  <Button variant="outline">{loading ? 'Preparing…' : 'Download PDF'}</Button>
+                )}
+              </PDFDownloadLink>
+              <Button variant="outline" onClick={() => window.print()}>Print</Button>
+              {isOfficer && (
+                <Button variant="blue" onClick={() => { setEmailForm({ email: inv.vendorId?.email || '', subject: `Invoice ${inv.invoiceNo}`, notes: '' }); setShowEmail(true); }}>Send via Email</Button>
               )}
-            </PDFDownloadLink>
-            <Button variant="outline" onClick={() => window.print()}>Print</Button>
-            {isOfficer && (
-              <Button variant="blue" onClick={() => { setEmailForm({ email: inv.vendorId?.email || '', subject: `Invoice ${inv.invoiceNo}`, notes: '' }); setShowEmail(true); }}>Send via Email</Button>
-            )}
-          </div>
-        }
-      />
+            </div>
+          }
+        />
+      </div>
       <Card className="p-6 print:shadow-none">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
