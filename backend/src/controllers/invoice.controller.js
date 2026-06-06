@@ -1,9 +1,23 @@
+import mongoose from 'mongoose';
 import Invoice from '../models/Invoice.js';
 import PurchaseOrder from '../models/PurchaseOrder.js';
 import Vendor from '../models/Vendor.js';
 import { logActivity } from '../utils/activityLogger.js';
 import { generateInvoiceNumber } from '../utils/generateInvoiceNumber.js';
 import { sendEmail } from '../utils/sendEmail.js';
+
+const toDecimal = (value) => mongoose.Types.Decimal128.fromString(String(value));
+
+/**
+ * Helper to read a Decimal128 or Number value as a plain number.
+ * Handles both raw Decimal128 objects and already-parsed numbers.
+ */
+function readDecimal(val) {
+  if (val == null) return 0;
+  if (typeof val === 'number') return val;
+  if (typeof val.toString === 'function') return parseFloat(val.toString());
+  return 0;
+}
 
 export async function listInvoices(req, res, next) {
   try {
@@ -38,10 +52,11 @@ export async function createInvoice(req, res, next) {
       invoiceNo,
       poId: po._id,
       vendorId: po.vendorId,
-      subtotal: po.subtotal,
-      tax: po.taxAmount,
-      total: po.totalAmount,
+      subtotal: toDecimal(readDecimal(po.subtotal)),
+      tax: toDecimal(readDecimal(po.taxAmount)),
+      total: toDecimal(readDecimal(po.totalAmount)),
       status: 'GENERATED',
+      emailDeliveryStatus: 'Pending',
     });
 
     await logActivity({ userId: req.user.id, action: 'Generated Invoice', entity: 'INVOICE', entityId: invoice._id });
@@ -87,6 +102,10 @@ export async function emailInvoice(req, res, next) {
     const subject = req.body.subject || `Invoice ${invoice.invoiceNo} — VendorBridge`;
     const notes = req.body.notes || '';
 
+    const subtotalDisplay = readDecimal(invoice.subtotal).toLocaleString();
+    const taxDisplay = readDecimal(invoice.tax).toLocaleString();
+    const totalDisplay = readDecimal(invoice.total).toLocaleString();
+
     try {
       await sendEmail({
         to: vendorEmail,
@@ -97,15 +116,22 @@ export async function emailInvoice(req, res, next) {
           <p>Please find your invoice details below:</p>
           <table style="border-collapse:collapse;width:100%">
             <tr><td style="padding:8px;border:1px solid #ddd"><strong>Invoice No</strong></td><td style="padding:8px;border:1px solid #ddd">${invoice.invoiceNo}</td></tr>
-            <tr><td style="padding:8px;border:1px solid #ddd"><strong>Subtotal</strong></td><td style="padding:8px;border:1px solid #ddd">$${invoice.subtotal?.toLocaleString()}</td></tr>
-            <tr><td style="padding:8px;border:1px solid #ddd"><strong>Tax (GST 18%)</strong></td><td style="padding:8px;border:1px solid #ddd">$${invoice.tax?.toLocaleString()}</td></tr>
-            <tr><td style="padding:8px;border:1px solid #ddd"><strong>Total</strong></td><td style="padding:8px;border:1px solid #ddd"><strong>$${invoice.total?.toLocaleString()}</strong></td></tr>
+            <tr><td style="padding:8px;border:1px solid #ddd"><strong>Subtotal</strong></td><td style="padding:8px;border:1px solid #ddd">$${subtotalDisplay}</td></tr>
+            <tr><td style="padding:8px;border:1px solid #ddd"><strong>Tax (GST 18%)</strong></td><td style="padding:8px;border:1px solid #ddd">$${taxDisplay}</td></tr>
+            <tr><td style="padding:8px;border:1px solid #ddd"><strong>Total</strong></td><td style="padding:8px;border:1px solid #ddd"><strong>$${totalDisplay}</strong></td></tr>
           </table>
           ${notes ? `<p>Notes: ${notes}</p>` : ''}
           <p style="margin-top:20px;color:#666">VendorBridge — Procurement Management</p>
         `,
       });
+
+      // Email sent successfully
+      invoice.emailDeliveryStatus = 'Sent';
     } catch {
+      // Email sending failed
+      invoice.emailDeliveryStatus = 'Failed';
+      invoice.status = invoice.status; // preserve current status
+      await invoice.save();
       return res.status(500).json({ message: 'Failed to send email — SMTP may not be configured' });
     }
 

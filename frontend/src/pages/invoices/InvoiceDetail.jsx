@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { PDFDownloadLink } from '@react-pdf/renderer';
 import PageHeader from '../../components/layout/PageHeader.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Card from '../../components/ui/Card.jsx';
@@ -7,6 +8,7 @@ import Badge from '../../components/ui/Badge.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
 import Modal from '../../components/ui/Modal.jsx';
 import Input from '../../components/ui/Input.jsx';
+import InvoiceDocument from '../../components/invoices/InvoiceDocument.jsx';
 import { useInvoiceDetail, useEmailInvoice } from '../../hooks/useInvoices.js';
 import { formatCurrency } from '../../utils/formatCurrency.js';
 import { formatDate } from '../../utils/formatDate.js';
@@ -34,6 +36,11 @@ export default function InvoiceDetail() {
         title={inv.invoiceNo}
         action={
           <div className="flex gap-2">
+            <PDFDownloadLink document={<InvoiceDocument invoice={inv} />} fileName={`${inv.invoiceNo}.pdf`}>
+              {({ loading }) => (
+                <Button variant="outline">{loading ? 'Preparing…' : 'Download PDF'}</Button>
+              )}
+            </PDFDownloadLink>
             <Button variant="outline" onClick={() => window.print()}>Print</Button>
             <Button variant="blue" onClick={() => { setEmailForm({ email: inv.vendorId?.email || '', subject: `Invoice ${inv.invoiceNo}`, notes: '' }); setShowEmail(true); }}>Send via Email</Button>
           </div>

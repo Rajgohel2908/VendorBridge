@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import PageHeader from '../../components/layout/PageHeader.jsx';
 import Card from '../../components/ui/Card.jsx';
@@ -8,6 +9,16 @@ import { activityService } from '../../services/activityService.js';
 import { formatDateTime } from '../../utils/formatDate.js';
 
 const entityColors = { RFQ: 'blue', QUOTATION: 'amber', APPROVAL: 'green', PO: 'slate', INVOICE: 'green', VENDOR: 'slate' };
+
+// Map entity types to their frontend route paths
+const entityRoutes = {
+  RFQ: (id) => `/rfq/${id}`,
+  QUOTATION: (id) => `/quotations`,
+  APPROVAL: (id) => `/approvals/${id}`,
+  PO: (id) => `/purchase-orders/${id}`,
+  INVOICE: (id) => `/invoices/${id}`,
+  VENDOR: (id) => `/vendors/${id}`,
+};
 
 export default function ActivityLogs() {
   const [entity, setEntity] = useState('');
@@ -54,16 +65,28 @@ export default function ActivityLogs() {
                 <th className="border-b border-brand-border px-4 py-3 font-semibold">User</th>
                 <th className="border-b border-brand-border px-4 py-3 font-semibold">Action</th>
                 <th className="border-b border-brand-border px-4 py-3 font-semibold">Entity</th>
+                <th className="border-b border-brand-border px-4 py-3 font-semibold">Record</th>
               </tr></thead>
               <tbody>
-                {logs.map((log) => (
-                  <tr key={log._id} className="odd:bg-white even:bg-slate-50">
-                    <td className="border-b border-brand-border px-4 py-3">{formatDateTime(log.createdAt)}</td>
-                    <td className="border-b border-brand-border px-4 py-3">{log.userId?.name || '—'}</td>
-                    <td className="border-b border-brand-border px-4 py-3 font-medium">{log.action}</td>
-                    <td className="border-b border-brand-border px-4 py-3"><Badge tone={entityColors[log.entity] || 'slate'}>{log.entity}</Badge></td>
-                  </tr>
-                ))}
+                {logs.map((log) => {
+                  const route = entityRoutes[log.entity];
+                  const linkTo = route && log.entityId ? route(log.entityId) : null;
+                  return (
+                    <tr key={log._id} className="odd:bg-white even:bg-slate-50">
+                      <td className="border-b border-brand-border px-4 py-3">{formatDateTime(log.createdAt)}</td>
+                      <td className="border-b border-brand-border px-4 py-3">{log.userId?.name || '—'}</td>
+                      <td className="border-b border-brand-border px-4 py-3 font-medium">{log.action}</td>
+                      <td className="border-b border-brand-border px-4 py-3"><Badge tone={entityColors[log.entity] || 'slate'}>{log.entity}</Badge></td>
+                      <td className="border-b border-brand-border px-4 py-3">
+                        {linkTo ? (
+                          <Link to={linkTo} className="text-brand-primary hover:underline">View →</Link>
+                        ) : (
+                          <span className="text-brand-muted">—</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

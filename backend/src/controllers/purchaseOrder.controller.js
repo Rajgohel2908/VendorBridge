@@ -1,9 +1,12 @@
+import mongoose from 'mongoose';
 import PurchaseOrder from '../models/PurchaseOrder.js';
 import Quotation from '../models/Quotation.js';
 import Approval from '../models/Approval.js';
 import RFQ from '../models/RFQ.js';
 import { logActivity } from '../utils/activityLogger.js';
 import { generatePONumber } from '../utils/generatePONumber.js';
+
+const toDecimal = (value) => mongoose.Types.Decimal128.fromString(String(value));
 
 export async function listPurchaseOrders(req, res, next) {
   try {
@@ -50,13 +53,13 @@ export async function createPurchaseOrder(req, res, next) {
         {
           description: rfq.title,
           quantity: rfq.quantity,
-          unitPrice: quotation.price,
-          total: subtotal,
+          unitPrice: toDecimal(quotation.price),
+          total: toDecimal(subtotal),
         },
       ],
-      subtotal,
-      taxAmount,
-      totalAmount,
+      subtotal: toDecimal(subtotal),
+      taxAmount: toDecimal(taxAmount),
+      totalAmount: toDecimal(totalAmount),
       status: 'GENERATED',
     });
 

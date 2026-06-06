@@ -27,6 +27,11 @@ export async function register(req, res, next) {
   try {
     handleValidation(req);
 
+    // Prevent self-registration as ADMIN
+    if (req.body.role === 'ADMIN') {
+      return res.status(403).json({ message: 'Admin accounts can only be created by an existing admin' });
+    }
+
     const existing = await User.findOne({ email: req.body.email });
     if (existing) {
       return res.status(409).json({ message: 'Email already registered' });
@@ -58,6 +63,10 @@ export async function login(req, res, next) {
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    if (user.isActive === false) {
+      return res.status(403).json({ message: 'Your account has been deactivated. Contact an administrator.' });
     }
 
     const valid = await bcrypt.compare(req.body.password, user.password);

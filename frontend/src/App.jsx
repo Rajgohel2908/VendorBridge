@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { useAppStore } from './store/useAppStore.js';
 import DashboardLayout from './components/layout/DashboardLayout.jsx';
+import ProtectedRoute from './components/auth/ProtectedRoute.jsx';
+import RoleGuard from './components/auth/RoleGuard.jsx';
 import Login from './pages/auth/Login.jsx';
 import Signup from './pages/auth/Signup.jsx';
 import ForgotPassword from './pages/auth/ForgotPassword.jsx';
@@ -23,6 +25,7 @@ import InvoiceList from './pages/invoices/InvoiceList.jsx';
 import InvoiceDetail from './pages/invoices/InvoiceDetail.jsx';
 import ActivityLogs from './pages/activity/ActivityLogs.jsx';
 import Reports from './pages/reports/Reports.jsx';
+import AdminUsers from './pages/admin/AdminUsers.jsx';
 
 export default function App() {
   const initAuth = useAppStore((s) => s.initAuth);
@@ -33,29 +36,72 @@ export default function App() {
 
   return (
     <Routes>
+      {/* Public routes */}
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route element={<DashboardLayout />}>
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/vendors" element={<VendorList />} />
-        <Route path="/vendors/new" element={<VendorNew />} />
-        <Route path="/vendors/:id" element={<VendorDetail />} />
-        <Route path="/rfq" element={<RFQList />} />
-        <Route path="/rfq/new" element={<RFQNew />} />
-        <Route path="/rfq/:id" element={<RFQDetail />} />
-        <Route path="/rfq/:id/compare" element={<QuotationComparison />} />
-        <Route path="/rfq/:id/quotations" element={<QuotationSubmit />} />
-        <Route path="/quotations" element={<QuotationList />} />
-        <Route path="/approvals" element={<ApprovalQueue />} />
-        <Route path="/approvals/:id" element={<ApprovalDetail />} />
-        <Route path="/purchase-orders" element={<POList />} />
-        <Route path="/purchase-orders/:id" element={<PODetail />} />
-        <Route path="/invoices" element={<InvoiceList />} />
-        <Route path="/invoices/:id" element={<InvoiceDetail />} />
-        <Route path="/activity" element={<ActivityLogs />} />
-        <Route path="/reports" element={<Reports />} />
+
+      {/* All authenticated routes */}
+      <Route element={<ProtectedRoute />}>
+        <Route element={<DashboardLayout />}>
+          {/* Dashboard — accessible by all authenticated users */}
+          <Route path="/dashboard" element={<Dashboard />} />
+
+          {/* RFQ list & detail — all authenticated users can view */}
+          <Route path="/rfq" element={<RFQList />} />
+          <Route path="/rfq/:id" element={<RFQDetail />} />
+
+          {/* RFQ creation — Procurement Officer only */}
+          <Route element={<RoleGuard roles={['PROCUREMENT_OFFICER']} />}>
+            <Route path="/rfq/new" element={<RFQNew />} />
+          </Route>
+
+          {/* RFQ comparison — Procurement Officer + Manager */}
+          <Route element={<RoleGuard roles={['PROCUREMENT_OFFICER', 'MANAGER']} />}>
+            <Route path="/rfq/:id/compare" element={<QuotationComparison />} />
+          </Route>
+
+          {/* Vendor management — Admin + Procurement Officer */}
+          <Route element={<RoleGuard roles={['ADMIN', 'PROCUREMENT_OFFICER']} />}>
+            <Route path="/vendors" element={<VendorList />} />
+            <Route path="/vendors/new" element={<VendorNew />} />
+            <Route path="/vendors/:id" element={<VendorDetail />} />
+          </Route>
+
+          {/* PO & Invoices — Admin + Procurement Officer */}
+          <Route element={<RoleGuard roles={['ADMIN', 'PROCUREMENT_OFFICER']} />}>
+            <Route path="/purchase-orders" element={<POList />} />
+            <Route path="/purchase-orders/:id" element={<PODetail />} />
+            <Route path="/invoices" element={<InvoiceList />} />
+            <Route path="/invoices/:id" element={<InvoiceDetail />} />
+          </Route>
+
+          {/* Quotation submission — Vendor only */}
+          <Route element={<RoleGuard roles={['VENDOR']} />}>
+            <Route path="/quotations" element={<QuotationList />} />
+            <Route path="/rfq/:id/quotations" element={<QuotationSubmit />} />
+          </Route>
+
+          {/* Approval workflow — Manager only */}
+          <Route element={<RoleGuard roles={['MANAGER']} />}>
+            <Route path="/approvals" element={<ApprovalQueue />} />
+            <Route path="/approvals/:id" element={<ApprovalDetail />} />
+          </Route>
+
+          {/* Reports — Admin + Manager */}
+          <Route element={<RoleGuard roles={['ADMIN', 'MANAGER']} />}>
+            <Route path="/reports" element={<Reports />} />
+          </Route>
+
+          {/* Activity logs — all authenticated */}
+          <Route path="/activity" element={<ActivityLogs />} />
+
+          {/* Admin panel — Admin only */}
+          <Route element={<RoleGuard roles={['ADMIN']} />}>
+            <Route path="/admin" element={<AdminUsers />} />
+          </Route>
+        </Route>
       </Route>
     </Routes>
   );

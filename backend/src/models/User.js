@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
     vendorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Vendor' },
+    isActive: { type: Boolean, default: true },
     resetToken: { type: String },
     resetTokenExpiry: { type: Date },
   },

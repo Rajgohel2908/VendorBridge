@@ -12,6 +12,7 @@ import approvalRoutes from './routes/approval.routes.js';
 import purchaseOrderRoutes from './routes/purchaseOrder.routes.js';
 import invoiceRoutes from './routes/invoice.routes.js';
 import activityRoutes from './routes/activity.routes.js';
+import adminRoutes from './routes/admin.routes.js';
 import reportsRoutes from './routes/reports.routes.js';
 import errorHandler from './middleware/errorHandler.js';
 
@@ -37,6 +38,7 @@ app.use('/api/purchase-orders', purchaseOrderRoutes);
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/activity', activityRoutes);
 app.use('/api/reports', reportsRoutes);
+app.use('/api/admin', adminRoutes);
 app.use(errorHandler);
 
 connectDB().then(() => {

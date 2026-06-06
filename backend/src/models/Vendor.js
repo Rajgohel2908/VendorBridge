@@ -9,6 +9,7 @@ const vendorSchema = new mongoose.Schema(
     phone: { type: String, trim: true },
     address: { type: String, trim: true },
     status: { type: String, enum: ['ACTIVE', 'INACTIVE'], default: 'ACTIVE' },
+    performanceRating: { type: Number, default: 0, min: 0, max: 5 },
   },
   { timestamps: true },
 );

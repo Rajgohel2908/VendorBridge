@@ -1,11 +1,29 @@
 import { useQuery } from '@tanstack/react-query';
 import api from '../../services/api.js';
 import PageHeader from '../../components/layout/PageHeader.jsx';
+import Button from '../../components/ui/Button.jsx';
 import Card from '../../components/ui/Card.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
 import SpendingChart from '../../components/reports/SpendingChart.jsx';
 import VendorPerformanceChart from '../../components/reports/VendorPerformanceChart.jsx';
 import { formatCurrency } from '../../utils/formatCurrency.js';
+
+function exportCSV(data) {
+  const rows = [
+    ['Vendor', 'Orders', 'Spend'],
+    ...data.map((v) => [v.name, v.totalOrders, v.totalSpend]),
+  ];
+  const csv = rows.map((r) => r.join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const now = new Date();
+  const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  a.href = url;
+  a.download = `vendorbridge-report-${month}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 export default function Reports() {
   const { data, isLoading } = useQuery({
@@ -17,10 +35,20 @@ export default function Reports() {
 
   const report = data?.data || {};
   const summary = report.summary || {};
+  const vendorPerf = report.vendorPerformance || [];
 
   return (
     <>
-      <PageHeader title="Reports" />
+      <PageHeader
+        title="Reports"
+        action={
+          vendorPerf.length > 0 && (
+            <Button variant="outline" onClick={() => exportCSV(vendorPerf)}>
+              Export CSV
+            </Button>
+          )
+        }
+      />
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="border-l-4 border-l-brand-primary p-4">
           <p className="text-3xl font-semibold">{formatCurrency(summary.totalSpend)}</p>
@@ -45,7 +73,7 @@ export default function Reports() {
           <VendorPerformanceChart data={report.deliveryPerformance || []} />
         </Card>
       </div>
-      {report.vendorPerformance?.length > 0 && (
+      {vendorPerf.length > 0 && (
         <div className="mt-5 overflow-x-auto rounded border border-brand-border bg-white">
           <table className="min-w-full text-sm">
             <thead className="bg-slate-50 text-left text-slate-600"><tr>
@@ -54,7 +82,7 @@ export default function Reports() {
               <th className="border-b border-brand-border px-4 py-3 font-semibold">Spend</th>
             </tr></thead>
             <tbody>
-              {report.vendorPerformance.map((v) => (
+              {vendorPerf.map((v) => (
                 <tr key={v._id} className="odd:bg-white even:bg-slate-50">
                   <td className="border-b border-brand-border px-4 py-3 font-medium">{v.name}</td>
                   <td className="border-b border-brand-border px-4 py-3">{v.totalOrders}</td>

@@ -66,7 +66,6 @@ export default function Signup() {
                 <option value="PROCUREMENT_OFFICER">Procurement Officer</option>
                 <option value="VENDOR">Vendor</option>
                 <option value="MANAGER">Manager</option>
-                <option value="ADMIN">Admin</option>
               </select>
               {errors.role && <span className="mt-1 block text-xs text-brand-danger">{errors.role.message}</span>}
             </label>

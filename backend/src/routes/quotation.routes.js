@@ -15,6 +15,7 @@ router.use(authMiddleware);
 router.get('/', allowRoles('VENDOR'), listQuotations);
 router.post('/', allowRoles('VENDOR'), quotationValidator, createQuotation);
 router.put('/:id', allowRoles('VENDOR'), quotationValidator, updateQuotation);
+router.patch('/:id', allowRoles('VENDOR'), quotationValidator, updateQuotation);
 router.get('/:id', allowRoles('PROCUREMENT_OFFICER', 'VENDOR'), getQuotation);
 
 export default router;

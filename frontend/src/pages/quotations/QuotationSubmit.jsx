@@ -1,36 +1,64 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { useEffect } from 'react';
 import PageHeader from '../../components/layout/PageHeader.jsx';
 import Card from '../../components/ui/Card.jsx';
 import Input from '../../components/ui/Input.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
 import { useRFQDetail } from '../../hooks/useRFQ.js';
-import { useCreateQuotation } from '../../hooks/useQuotations.js';
+import { useCreateQuotation, useUpdateQuotation } from '../../hooks/useQuotations.js';
+import { quotationService } from '../../services/quotationService.js';
 import { formatDate } from '../../utils/formatDate.js';
 import { formatCurrency } from '../../utils/formatCurrency.js';
 
 export default function QuotationSubmit() {
   const { id: rfqId } = useParams();
+  const [searchParams] = useSearchParams();
+  const editId = searchParams.get('edit');
+  const isEditMode = !!editId;
+
   const navigate = useNavigate();
   const { data: rfqData, isLoading: loadingRFQ } = useRFQDetail(rfqId);
   const rfq = rfqData?.data;
-  const mutation = useCreateQuotation();
-  const { register, handleSubmit, watch, formState: { errors } } = useForm();
+  const createMutation = useCreateQuotation();
+  const updateMutation = useUpdateQuotation();
+  const mutation = isEditMode ? updateMutation : createMutation;
+  const { register, handleSubmit, watch, reset, formState: { errors } } = useForm();
   const price = watch('price');
 
+  // Pre-fill form when editing
+  useEffect(() => {
+    if (editId) {
+      quotationService.detail(editId).then((res) => {
+        const q = res.data?.data;
+        if (q) {
+          reset({ price: q.price, deliveryDays: q.deliveryDays, notes: q.notes || '' });
+        }
+      });
+    }
+  }, [editId, reset]);
+
   const onSubmit = (data) => {
-    mutation.mutate(
-      { rfqId, price: Number(data.price), deliveryDays: Number(data.deliveryDays), notes: data.notes },
-      { onSuccess: () => navigate('/quotations') },
-    );
+    const payload = { price: Number(data.price), deliveryDays: Number(data.deliveryDays), notes: data.notes };
+    if (isEditMode) {
+      updateMutation.mutate(
+        { id: editId, data: payload },
+        { onSuccess: () => navigate('/quotations') },
+      );
+    } else {
+      createMutation.mutate(
+        { rfqId, ...payload },
+        { onSuccess: () => navigate('/quotations') },
+      );
+    }
   };
 
   if (loadingRFQ) return <div className="flex justify-center py-20"><Spinner /></div>;
 
   return (
     <>
-      <PageHeader title="Submit Quotation" />
+      <PageHeader title={isEditMode ? 'Edit Quotation' : 'Submit Quotation'} />
       <Card className="mb-4 bg-slate-50 p-4">
         <h2 className="font-semibold">{rfq?.title || 'RFQ'}</h2>
         <p className="mt-1 text-sm text-brand-muted">
@@ -51,7 +79,7 @@ export default function QuotationSubmit() {
             <textarea className="min-h-24 w-full rounded border border-brand-border px-3 py-2 text-sm outline-none focus:border-brand-primary focus:ring-2 focus:ring-blue-100" {...register('notes')} />
           </label>
           <Button variant="blue" type="submit" disabled={mutation.isPending}>
-            {mutation.isPending ? <><Spinner /> Submitting…</> : 'Submit Quotation'}
+            {mutation.isPending ? <><Spinner /> {isEditMode ? 'Updating…' : 'Submitting…'}</> : isEditMode ? 'Update Quotation' : 'Submit Quotation'}
           </Button>
         </form>
       </Card>

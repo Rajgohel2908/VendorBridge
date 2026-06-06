@@ -8,6 +8,7 @@ import {
   FileText,
   Home,
   ReceiptText,
+  Shield,
   ShoppingCart,
   Users,
 } from 'lucide-react';
@@ -24,6 +25,7 @@ const items = [
   { to: '/invoices', label: 'Invoices', icon: ReceiptText, roles: ['ADMIN', 'PROCUREMENT_OFFICER'] },
   { to: '/activity', label: 'Activity', icon: Activity, roles: ['ADMIN', 'PROCUREMENT_OFFICER', 'MANAGER', 'VENDOR'] },
   { to: '/reports', label: 'Reports', icon: BarChart3, roles: ['ADMIN', 'MANAGER'] },
+  { to: '/admin', label: 'Admin', icon: Shield, roles: ['ADMIN'] },
 ];
 
 export default function Sidebar({ open, onClose }) {

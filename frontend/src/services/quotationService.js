@@ -4,5 +4,5 @@ export const quotationService = {
   list: () => api.get('/quotations'),
   create: (payload) => api.post('/quotations', payload),
   detail: (id) => api.get(`/quotations/${id}`),
-  update: (id, payload) => api.put(`/quotations/${id}`, payload),
+  update: (id, payload) => api.patch(`/quotations/${id}`, payload),
 };

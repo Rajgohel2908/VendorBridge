@@ -1,9 +1,11 @@
+import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import PageHeader from '../../components/layout/PageHeader.jsx';
 import Card from '../../components/ui/Card.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
+import StarRating from '../../components/ui/StarRating.jsx';
 import { useRFQDetail, useRFQQuotations } from '../../hooks/useRFQ.js';
 import { formatCurrency } from '../../utils/formatCurrency.js';
 import api from '../../services/api.js';
@@ -14,7 +16,35 @@ export default function QuotationComparison() {
   const { data: rfqData } = useRFQDetail(id);
   const { data: quotData, isLoading } = useRFQQuotations(id);
   const rfq = rfqData?.data;
-  const quotations = quotData?.data || [];
+  const rawQuotations = quotData?.data || [];
+
+  // Sorting state
+  const [sortField, setSortField] = useState('price');
+  const [sortDir, setSortDir] = useState('asc');
+
+  const toggleSort = (field) => {
+    if (sortField === field) {
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortField(field);
+      setSortDir('asc');
+    }
+  };
+
+  const sortArrow = (field) => {
+    if (sortField !== field) return '';
+    return sortDir === 'asc' ? ' ↑' : ' ↓';
+  };
+
+  const quotations = useMemo(() => {
+    const sorted = [...rawQuotations];
+    sorted.sort((a, b) => {
+      const valA = sortField === 'price' ? a.price : a.deliveryDays;
+      const valB = sortField === 'price' ? b.price : b.deliveryDays;
+      return sortDir === 'asc' ? valA - valB : valB - valA;
+    });
+    return sorted;
+  }, [rawQuotations, sortField, sortDir]);
 
   if (isLoading) return <div className="flex justify-center py-20"><Spinner /></div>;
 
@@ -57,8 +87,23 @@ export default function QuotationComparison() {
               </tr>
             </thead>
             <tbody>
+              {/* Vendor Rating Row */}
               <tr>
-                <td className="border-b border-brand-border px-4 py-3 font-medium">Unit Price</td>
+                <td className="border-b border-brand-border px-4 py-3 font-medium">Vendor Rating</td>
+                {quotations.map((q) => (
+                  <td key={q._id} className="border-b border-brand-border px-4 py-3">
+                    <StarRating value={q.vendorId?.performanceRating || 0} />
+                  </td>
+                ))}
+              </tr>
+              {/* Unit Price — sortable */}
+              <tr>
+                <td
+                  className="border-b border-brand-border px-4 py-3 font-medium cursor-pointer select-none hover:text-brand-primary"
+                  onClick={() => toggleSort('price')}
+                >
+                  Unit Price{sortArrow('price')}
+                </td>
                 {quotations.map((q) => (
                   <td key={q._id} className={`border-b border-brand-border px-4 py-3 ${q.price === lowestPrice ? 'bg-green-50 font-semibold text-brand-success' : ''}`}>
                     {formatCurrency(q.price)}
@@ -73,8 +118,14 @@ export default function QuotationComparison() {
                   </td>
                 ))}
               </tr>
+              {/* Delivery — sortable */}
               <tr>
-                <td className="border-b border-brand-border px-4 py-3 font-medium">Delivery (days)</td>
+                <td
+                  className="border-b border-brand-border px-4 py-3 font-medium cursor-pointer select-none hover:text-brand-primary"
+                  onClick={() => toggleSort('deliveryDays')}
+                >
+                  Delivery (days){sortArrow('deliveryDays')}
+                </td>
                 {quotations.map((q) => (
                   <td key={q._id} className={`border-b border-brand-border px-4 py-3 ${q.deliveryDays === fastestDelivery ? 'bg-blue-50 font-semibold text-brand-primary' : ''}`}>
                     {q.deliveryDays}

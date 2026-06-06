@@ -5,6 +5,7 @@ import Button from '../../components/ui/Button.jsx';
 import Input from '../../components/ui/Input.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 import Spinner from '../../components/ui/Spinner.jsx';
+import StarRating from '../../components/ui/StarRating.jsx';
 import { useVendors } from '../../hooks/useVendors.js';
 
 export default function VendorList() {
@@ -36,6 +37,7 @@ export default function VendorList() {
               <tr>
                 <th className="border-b border-brand-border px-4 py-3 font-semibold">Vendor Name</th>
                 <th className="border-b border-brand-border px-4 py-3 font-semibold">Category</th>
+                <th className="border-b border-brand-border px-4 py-3 font-semibold">Rating</th>
                 <th className="border-b border-brand-border px-4 py-3 font-semibold">GST No.</th>
                 <th className="border-b border-brand-border px-4 py-3 font-semibold">Contact</th>
                 <th className="border-b border-brand-border px-4 py-3 font-semibold">Status</th>
@@ -47,6 +49,7 @@ export default function VendorList() {
                 <tr key={v._id} className="odd:bg-white even:bg-slate-50 hover:bg-slate-100">
                   <td className="border-b border-brand-border px-4 py-3 font-medium">{v.name}</td>
                   <td className="border-b border-brand-border px-4 py-3">{v.category}</td>
+                  <td className="border-b border-brand-border px-4 py-3"><StarRating value={v.performanceRating || 0} /></td>
                   <td className="border-b border-brand-border px-4 py-3 font-mono text-xs">{v.gstNumber || '—'}</td>
                   <td className="border-b border-brand-border px-4 py-3">{v.email}</td>
                   <td className="border-b border-brand-border px-4 py-3">
