@@ -16,8 +16,13 @@ export default function QuotationComparison() {
   const navigate = useNavigate();
   const { data: rfqData, isLoading: isRfqLoading } = useRFQDetail(id);
   const { data: quotData, isLoading: isQuotLoading } = useRFQQuotations(id);
+  // ✅ MUST be here — hooks cannot be called after conditional returns
+  const { data: approvalsData } = useApprovals();
+
   const rfq = rfqData?.data;
   const rawQuotations = quotData?.data || [];
+  const rfqApprovals = approvalsData?.data?.filter((a) => a.rfqId?._id === id || a.rfqId === id) || [];
+  const hasPendingOrApproved = rfqApprovals.some((a) => a.status === 'PENDING' || a.status === 'APPROVED');
 
   // Sorting state
   const [sortField, setSortField] = useState('price');
@@ -65,9 +70,7 @@ export default function QuotationComparison() {
     }
   };
 
-  const { data: approvalsData } = useApprovals();
-  const rfqApprovals = approvalsData?.data?.filter((a) => a.rfqId?._id === id || a.rfqId === id) || [];
-  const hasPendingOrApproved = rfqApprovals.some((a) => a.status === 'PENDING' || a.status === 'APPROVED');
+  // (approvalsData, rfqApprovals, hasPendingOrApproved already derived above)
 
   return (
     <>

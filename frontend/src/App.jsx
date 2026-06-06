@@ -49,20 +49,26 @@ export default function App() {
           {/* Dashboard — accessible by all authenticated users */}
           <Route path="/dashboard" element={<Dashboard />} />
 
-          {/* RFQ list & detail — all authenticated users can view */}
+          {/* RFQ list — all authenticated users can view */}
           <Route path="/rfq" element={<RFQList />} />
-          <Route path="/rfq/:id" element={<RFQDetail />} />
 
-          {/* RFQ creation & editing — Procurement Officer only */}
+          {/* RFQ creation — Procurement Officer only (MUST be before /:id) */}
           <Route element={<RoleGuard roles={['PROCUREMENT_OFFICER']} />}>
             <Route path="/rfq/new" element={<RFQNew />} />
-            <Route path="/rfq/:id/edit" element={<RFQEdit />} />
           </Route>
 
-          {/* RFQ comparison — Procurement Officer + Manager */}
+          {/* RFQ comparison — Procurement Officer + Manager (MUST be before /:id) */}
           <Route element={<RoleGuard roles={['PROCUREMENT_OFFICER', 'MANAGER']} />}>
             <Route path="/rfq/:id/compare" element={<QuotationComparison />} />
           </Route>
+
+          {/* RFQ editing — Procurement Officer only (MUST be before /:id) */}
+          <Route element={<RoleGuard roles={['PROCUREMENT_OFFICER']} />}>
+            <Route path="/rfq/:id/edit" element={<RFQEdit />} />
+          </Route>
+
+          {/* RFQ detail — all authenticated users can view (MUST be after specific routes) */}
+          <Route path="/rfq/:id" element={<RFQDetail />} />
 
           {/* Vendor management — Admin only (Manage vendors) */}
           <Route element={<RoleGuard roles={['ADMIN']} />}>
