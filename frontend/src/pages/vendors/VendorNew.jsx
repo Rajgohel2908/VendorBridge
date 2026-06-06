@@ -15,7 +15,7 @@ export default function VendorNew() {
   return (
     <>
       <PageHeader title="Add Vendor" />
-      <Card className="max-w-2xl p-4">
+      <Card className="max-w-4xl p-6 md:p-8">
         <VendorForm onSubmit={handleSubmit} isLoading={mutation.isPending} />
       </Card>
     </>

@@ -21,7 +21,7 @@ export default function VendorDetail() {
   return (
     <>
       <PageHeader title="Vendor Detail" description="View and edit vendor record." />
-      <Card className="max-w-2xl p-4">
+      <Card className="max-w-4xl p-6 md:p-8">
         {vendor ? <VendorForm defaultValues={vendor} onSubmit={handleSubmit} isLoading={mutation.isPending} /> : <p className="text-brand-muted">Vendor not found.</p>}
       </Card>
     </>
