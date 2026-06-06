@@ -12,10 +12,10 @@ import { quotationValidator } from '../validators/quotation.validator.js';
 const router = Router();
 
 router.use(authMiddleware);
-router.get('/', allowRoles('VENDOR'), listQuotations);
+router.get('/', allowRoles('ADMIN', 'MANAGER', 'PROCUREMENT_OFFICER', 'VENDOR'), listQuotations);
 router.post('/', allowRoles('VENDOR'), quotationValidator, createQuotation);
 router.put('/:id', allowRoles('VENDOR'), quotationValidator, updateQuotation);
 router.patch('/:id', allowRoles('VENDOR'), quotationValidator, updateQuotation);
-router.get('/:id', allowRoles('PROCUREMENT_OFFICER', 'VENDOR'), getQuotation);
+router.get('/:id', allowRoles('ADMIN', 'MANAGER', 'PROCUREMENT_OFFICER', 'VENDOR'), getQuotation);
 
 export default router;

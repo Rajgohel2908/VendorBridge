@@ -5,7 +5,7 @@ import allowRoles from '../middleware/role.middleware.js';
 
 const router = Router();
 
-router.get('/', authMiddleware, allowRoles('ADMIN', 'MANAGER', 'PROCUREMENT_OFFICER', 'VENDOR'), getReports);
+router.get('/', authMiddleware, allowRoles('ADMIN', 'MANAGER', 'PROCUREMENT_OFFICER'), getReports);
 
 export default router;
 
