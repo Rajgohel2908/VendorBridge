@@ -19,7 +19,7 @@ const items = [
   { to: '/dashboard', label: 'Dashboard', icon: Home, roles: ['ADMIN', 'PROCUREMENT_OFFICER', 'MANAGER', 'VENDOR'] },
   { to: '/vendors', label: 'Vendors', icon: Users, roles: ['ADMIN'] }, // Admin: Manage vendors
   { to: '/rfq', label: 'RFQs', icon: FileQuestion, roles: ['ADMIN', 'PROCUREMENT_OFFICER', 'MANAGER', 'VENDOR'] }, // PO: Create RFQs, Vendor: Track RFQ status, Manager: Monitor procurement workflows
-  { to: '/quotations', label: 'Quotations', icon: FileText, roles: ['ADMIN', 'PROCUREMENT_OFFICER', 'MANAGER', 'VENDOR'] }, // All roles: View & compare quotations
+  { to: '/quotations', label: 'Quotations', icon: FileText, roles: ['VENDOR'] }, // Vendor: Submit quotations
   { to: '/approvals', label: 'Approvals', icon: ClipboardCheck, roles: ['MANAGER'] }, // Manager: Approve or reject requests
   { to: '/purchase-orders', label: 'Purchase Orders', icon: ShoppingCart, roles: ['ADMIN', 'PROCUREMENT_OFFICER', 'MANAGER', 'VENDOR'] }, // PO: Generate POs, Vendor: View POs, Manager: Monitor workflows
   { to: '/invoices', label: 'Invoices', icon: ReceiptText, roles: ['ADMIN', 'PROCUREMENT_OFFICER', 'MANAGER'] }, // PO: Generate Invoices, Manager: Monitor workflows

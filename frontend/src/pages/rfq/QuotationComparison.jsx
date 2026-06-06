@@ -16,7 +16,6 @@ export default function QuotationComparison() {
   const navigate = useNavigate();
   const { data: rfqData } = useRFQDetail(id);
   const { data: quotData, isLoading } = useRFQQuotations(id);
-  const { data: approvalsData } = useApprovals();
   const rfq = rfqData?.data;
   const rawQuotations = quotData?.data || [];
 
@@ -66,6 +65,7 @@ export default function QuotationComparison() {
     }
   };
 
+  const { data: approvalsData } = useApprovals();
   const rfqApprovals = approvalsData?.data?.filter((a) => a.rfqId?._id === id || a.rfqId === id) || [];
   const hasPendingOrApproved = rfqApprovals.some((a) => a.status === 'PENDING' || a.status === 'APPROVED');
 
