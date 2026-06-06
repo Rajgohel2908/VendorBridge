@@ -104,9 +104,27 @@ export default function Login() {
             <Button type="submit" className="w-full" disabled={loginMutation.isPending}>
               {loginMutation.isPending ? <><Spinner /> Signing in...</> : 'Sign in'}
             </Button>
-            <Link to="/signup" className="text-center text-sm text-brand-muted">
-              Don't have an account? <span className="font-semibold text-brand-primary">Create one</span>
-            </Link>
+            <div className="mt-6 border-t border-brand-border/60 pt-5">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Demo Accounts (Password: password123)</h3>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="rounded bg-slate-100/70 p-2 border border-brand-border/40">
+                  <p className="font-bold text-slate-800">Admin</p>
+                  <p className="text-brand-muted select-all cursor-pointer">aarav@vendorbridge.test</p>
+                </div>
+                <div className="rounded bg-slate-100/70 p-2 border border-brand-border/40">
+                  <p className="font-bold text-slate-800">Procurement Officer</p>
+                  <p className="text-brand-muted select-all cursor-pointer">priya@vendorbridge.test</p>
+                </div>
+                <div className="rounded bg-slate-100/70 p-2 border border-brand-border/40">
+                  <p className="font-bold text-slate-800">Manager</p>
+                  <p className="text-brand-muted select-all cursor-pointer">karan@vendorbridge.test</p>
+                </div>
+                <div className="rounded bg-slate-100/70 p-2 border border-brand-border/40">
+                  <p className="font-bold text-slate-800">Vendor</p>
+                  <p className="text-brand-muted select-all cursor-pointer">vendor@acme.test</p>
+                </div>
+              </div>
+            </div>
           </div>
         </form>
       </section>
