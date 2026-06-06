@@ -18,6 +18,7 @@ import RFQEdit from './pages/rfq/RFQEdit.jsx';
 import QuotationComparison from './pages/rfq/QuotationComparison.jsx';
 import QuotationList from './pages/quotations/QuotationList.jsx';
 import QuotationSubmit from './pages/quotations/QuotationSubmit.jsx';
+import QuotationDetail from './pages/quotations/QuotationDetail.jsx';
 import ApprovalQueue from './pages/approvals/ApprovalQueue.jsx';
 import ApprovalDetail from './pages/approvals/ApprovalDetail.jsx';
 import POList from './pages/purchase-orders/POList.jsx';
@@ -69,6 +70,7 @@ export default function App() {
 
           {/* RFQ detail — all authenticated users can view (MUST be after specific routes) */}
           <Route path="/rfq/:id" element={<RFQDetail />} />
+          <Route path="/quotations/:id" element={<QuotationDetail />} />
 
           {/* Vendor management — Admin only (Manage vendors) */}
           <Route element={<RoleGuard roles={['ADMIN']} />}>

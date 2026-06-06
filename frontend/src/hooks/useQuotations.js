@@ -13,3 +13,10 @@ export const useUpdateQuotation = () => {
   const qc = useQueryClient();
   return useMutation({ mutationFn: ({ id, data }) => quotationService.update(id, data), onSuccess: () => qc.invalidateQueries({ queryKey: ['quotations'] }) });
 };
+
+export const useQuotationDetail = (id) =>
+  useQuery({
+    queryKey: ['quotations', id],
+    queryFn: () => quotationService.detail(id).then((r) => r.data),
+    enabled: !!id,
+  });

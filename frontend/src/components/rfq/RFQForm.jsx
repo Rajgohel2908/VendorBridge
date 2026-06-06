@@ -13,6 +13,22 @@ export default function RFQForm({ onSubmit, isLoading, defaultValues }) {
   const vendors = vendorsData?.data || [];
   const [selectedVendors, setSelectedVendors] = useState([]);
   const [file, setFile] = useState(null);
+  const [vendorSearch, setVendorSearch] = useState('');
+
+  useEffect(() => {
+    if (defaultValues) {
+      reset({
+        title: defaultValues.title,
+        description: defaultValues.description,
+        quantity: defaultValues.quantity,
+        deadline: defaultValues.deadline ? new Date(defaultValues.deadline).toISOString().split('T')[0] : '',
+      });
+      if (defaultValues.vendors) {
+        const vendorIds = defaultValues.vendors.map((v) => typeof v === 'object' ? v._id : v);
+        setSelectedVendors(vendorIds);
+      }
+    }
+  }, [defaultValues, reset]);
 
   const toggleVendor = (id) => {
     setSelectedVendors((prev) => prev.includes(id) ? prev.filter((v) => v !== id) : [...prev, id]);
@@ -81,10 +97,31 @@ export default function RFQForm({ onSubmit, isLoading, defaultValues }) {
         </div>
       </Card>
       <Card className="p-4">
-        <h3 className="mb-4 text-sm font-semibold uppercase text-brand-muted">Assign Vendors ({selectedVendors.length})</h3>
-        {vendors.length === 0 ? <p className="text-sm text-brand-muted">No vendors available.</p> : (
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-sm font-semibold uppercase text-brand-muted">Assign Vendors ({selectedVendors.length})</h3>
+          <div className="flex gap-2 text-xs">
+            <button type="button" onClick={handleSelectAll} className="text-brand-primary hover:underline">Select All</button>
+            <span className="text-slate-300">|</span>
+            <button type="button" onClick={handleClearAll} className="text-brand-primary hover:underline">Clear</button>
+          </div>
+        </div>
+
+        <div className="relative mb-4">
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Search vendors..."
+            value={vendorSearch}
+            onChange={(e) => setVendorSearch(e.target.value)}
+            className="w-full rounded border border-brand-border bg-white pl-9 pr-3 py-1.5 text-sm outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/10"
+          />
+        </div>
+
+        {filteredVendors.length === 0 ? (
+          <p className="text-sm text-brand-muted py-4 text-center">No matching vendors found.</p>
+        ) : (
           <div className="max-h-64 space-y-2 overflow-y-auto">
-            {vendors.filter((v) => v.status === 'ACTIVE').map((v) => (
+            {filteredVendors.map((v) => (
               <label key={v._id} className={`flex cursor-pointer items-center gap-3 rounded border p-3 text-sm transition-colors ${selectedVendors.includes(v._id) ? 'border-brand-primary bg-blue-50' : 'border-brand-border hover:bg-slate-50'}`}>
                 <input type="checkbox" checked={selectedVendors.includes(v._id)} onChange={() => toggleVendor(v._id)} className="accent-brand-primary" />
                 <div>
@@ -97,7 +134,11 @@ export default function RFQForm({ onSubmit, isLoading, defaultValues }) {
         )}
         <div className="mt-5 flex gap-3">
           <Button variant="blue" type="submit" disabled={isLoading}>
-            {isLoading ? <><Spinner /> Creating…</> : 'Create RFQ'}
+            {isLoading ? (
+              <><Spinner /> {defaultValues ? 'Saving…' : 'Creating…'}</>
+            ) : (
+              defaultValues ? 'Save Changes' : 'Create RFQ'
+            )}
           </Button>
         </div>
       </Card>
