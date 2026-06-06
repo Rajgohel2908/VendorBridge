@@ -1,14 +1,17 @@
 import Button from './Button.jsx';
+import { X } from 'lucide-react';
 
 export default function Modal({ title, children, onClose }) {
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/40 p-4">
-      <div className="w-full max-w-lg rounded border border-brand-border bg-white shadow-lg">
-        <div className="flex items-center justify-between border-b border-brand-border px-4 py-3">
-          <h2 className="font-semibold">{title}</h2>
-          <Button variant="ghost" onClick={onClose}>Close</Button>
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-sm">
+      <div className="w-full max-w-lg rounded-lg border border-white/80 bg-brand-surface shadow-2xl shadow-slate-950/20 ring-1 ring-slate-900/10">
+        <div className="flex items-center justify-between border-b border-brand-border px-5 py-4">
+          <h2 className="font-bold text-brand-ink">{title}</h2>
+          <Button variant="ghost" onClick={onClose} className="h-9 w-9 p-0" title="Close">
+            <X size={17} />
+          </Button>
         </div>
-        <div className="p-4">{children}</div>
+        <div className="p-5">{children}</div>
       </div>
     </div>
   );

@@ -15,6 +15,8 @@ export default function RFQDetail() {
   const { id } = useParams();
   const user = useAppStore((s) => s.user);
   const { data, isLoading } = useRFQDetail(id);
+  const { data: myQuotes } = useQuotations();
+
   const rfq = data?.data;
 
   if (isLoading) return <div className="flex justify-center py-20"><Spinner /></div>;
@@ -23,7 +25,6 @@ export default function RFQDetail() {
   const isVendor = user?.role === 'VENDOR';
   const isOfficer = user?.role === 'PROCUREMENT_OFFICER';
   
-  const { data: myQuotes } = useQuotations();
   const existingQuote = isVendor ? myQuotes?.data?.find(q => q.rfqId?._id === id) : null;
 
   return (

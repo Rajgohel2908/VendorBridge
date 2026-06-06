@@ -15,9 +15,15 @@ export default function QuotationList() {
 
   return (
     <>
-      <PageHeader title="My Quotations" />
+      <PageHeader 
+        title="My Quotations" 
+        action={<Link to="/rfq"><Button variant="blue">Find RFQs to Quote</Button></Link>}
+      />
       {isLoading ? <div className="flex justify-center py-10"><Spinner /></div> : quotations.length === 0 ? (
-        <p className="py-10 text-center text-brand-muted">No quotations submitted yet.</p>
+        <div className="py-10 text-center">
+          <p className="mb-4 text-brand-muted">No quotations submitted yet.</p>
+          <Link to="/rfq"><Button variant="outline">Browse Open RFQs</Button></Link>
+        </div>
       ) : (
         <div className="overflow-x-auto rounded border border-brand-border bg-white">
           <table className="min-w-full text-sm">

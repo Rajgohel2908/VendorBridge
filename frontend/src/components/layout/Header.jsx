@@ -1,4 +1,4 @@
-import { LogOut, Menu } from 'lucide-react';
+import { LogOut, Menu, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import NotificationBell from '../activity/NotificationBell.jsx';
 import Badge from '../ui/Badge.jsx';
@@ -29,22 +29,28 @@ export default function Header({ onMenuToggle }) {
   };
 
   return (
-    <header className="flex h-16 items-center justify-between border-b border-brand-border bg-white px-4 lg:px-6">
+    <header className="sticky top-0 z-10 flex h-20 items-center justify-between border-b border-white/70 bg-brand-surface/85 px-4 shadow-sm shadow-slate-900/5 backdrop-blur lg:px-7">
       <div className="flex items-center gap-3">
-        <button onClick={onMenuToggle} className="rounded p-1.5 text-slate-600 hover:bg-slate-100 lg:hidden">
+        <button onClick={onMenuToggle} className="rounded-md p-2 text-slate-600 hover:bg-slate-900/5 lg:hidden">
           <Menu size={20} />
         </button>
-        <p className="text-sm text-brand-muted">Procurement workspace</p>
+        <div>
+          <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-brand-teal">
+            <Sparkles size={14} />
+            Procurement workspace
+          </p>
+          <p className="mt-1 hidden text-sm text-brand-muted sm:block">Track RFQs, approvals, orders, and invoices in one place.</p>
+        </div>
       </div>
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         <NotificationBell />
-        <div className="text-right">
-          <p className="text-sm font-semibold">{user?.name || 'User'}</p>
+        <div className="hidden text-right sm:block">
+          <p className="text-sm font-bold text-brand-ink">{user?.name || 'User'}</p>
           <Badge tone={roleBadgeTone[user?.role] || 'slate'}>{roleLabel[user?.role] || user?.role}</Badge>
         </div>
         <button
           onClick={handleLogout}
-          className="rounded border border-brand-border p-2 text-slate-500 hover:bg-slate-50 hover:text-brand-danger"
+          className="rounded-md border border-brand-border bg-white/75 p-2 text-slate-500 transition hover:border-red-200 hover:bg-red-50 hover:text-brand-danger"
           title="Logout"
         >
           <LogOut size={16} />

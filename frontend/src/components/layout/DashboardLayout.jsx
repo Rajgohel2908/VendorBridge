@@ -25,12 +25,12 @@ export default function DashboardLayout() {
     <div className="flex min-h-screen bg-brand-background">
       {/* Mobile overlay */}
       {sidebarOpen && (
-        <div className="fixed inset-0 z-20 bg-slate-950/40 lg:hidden" onClick={() => setSidebarOpen(false)} />
+        <div className="fixed inset-0 z-20 bg-slate-950/50 backdrop-blur-sm lg:hidden" onClick={() => setSidebarOpen(false)} />
       )}
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="min-w-0 flex-1">
         <Header onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />
-        <main className="p-4 lg:p-6">
+        <main className="mx-auto w-full max-w-[1480px] p-4 lg:p-7">
           <Outlet />
         </main>
       </div>

@@ -33,38 +33,51 @@ export default function Sidebar({ open, onClose }) {
 
   return (
     <aside
-      className={`fixed inset-y-0 left-0 z-30 w-64 transform bg-brand-sidebar text-white transition-transform duration-200 lg:static lg:translate-x-0 ${
+      className={`fixed inset-y-0 left-0 z-30 w-72 transform bg-brand-sidebar text-white shadow-2xl shadow-slate-950/20 transition-transform duration-200 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 ${
         open ? 'translate-x-0' : '-translate-x-full'
       }`}
     >
-      <div className="flex h-16 items-center justify-between border-b border-white/10 px-5">
+      <div className="flex h-20 items-center justify-between border-b border-white/10 px-5">
         <div className="flex items-center gap-3">
-          <img src="/logo.svg" alt="VendorBridge" className="h-8 w-8" />
-          <span className="font-display text-2xl">VendorBridge</span>
+          <span className="grid h-11 w-11 place-items-center rounded-lg bg-white/10 ring-1 ring-white/15">
+            <img src="/logo.svg" alt="VendorBridge" className="h-7 w-7" />
+          </span>
+          <div>
+            <span className="block font-display text-2xl leading-none">VendorBridge</span>
+            <span className="text-xs font-medium text-cyan-100/80">Procurement OS</span>
+          </div>
         </div>
-        <button onClick={onClose} className="rounded p-1 text-slate-400 hover:text-white lg:hidden">
+        <button onClick={onClose} className="rounded-md p-1.5 text-slate-300 hover:bg-white/10 hover:text-white lg:hidden">
           <X size={18} />
         </button>
       </div>
-      <nav className="px-3 py-4">
+      <nav className="space-y-1 px-3 py-5">
         {visibleItems.map(({ to, label, icon: Icon }) => (
           <NavLink
             key={to}
             to={to}
             onClick={onClose}
             className={({ isActive }) =>
-              `mb-1 flex items-center gap-3 rounded-md border-l-2 px-3 py-2 text-sm transition-colors ${
+              `group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition ${
                 isActive
-                  ? 'border-brand-primary bg-white/10 text-white'
-                  : 'border-transparent text-slate-300 hover:bg-white/5 hover:text-white'
+                  ? 'bg-white text-brand-sidebar shadow-lg shadow-slate-950/20'
+                  : 'text-slate-300 hover:bg-white/10 hover:text-white'
               }`
             }
           >
-            <Icon size={18} />
+            <span className="grid h-8 w-8 place-items-center rounded-md bg-white/10 text-cyan-100 transition group-hover:bg-white/15">
+              <Icon size={17} />
+            </span>
             {label}
           </NavLink>
         ))}
       </nav>
+      <div className="absolute bottom-0 left-0 right-0 border-t border-white/10 p-4">
+        <div className="rounded-lg bg-white/10 p-3 ring-1 ring-white/10">
+          <p className="text-xs font-semibold uppercase tracking-wide text-cyan-100/80">Workspace</p>
+          <p className="mt-1 text-sm font-semibold text-white">{user?.company || 'VendorBridge Network'}</p>
+        </div>
+      </div>
     </aside>
   );
 }
