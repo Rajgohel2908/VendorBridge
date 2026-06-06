@@ -33,7 +33,7 @@ export default function PODetail() {
     );
   };
 
-  const isOfficer = user?.role === 'PROCUREMENT_OFFICER';
+  const isOfficerOrManager = user?.role === 'PROCUREMENT_OFFICER' || user?.role === 'MANAGER';
 
   return (
     <>
@@ -46,7 +46,7 @@ export default function PODetail() {
                 View Invoice
               </Button>
             ) : (
-              isOfficer && (
+              isOfficerOrManager && (
                 <Button variant="blue" onClick={handleGenInvoice} disabled={invoiceMutation.isPending}>
                   {invoiceMutation.isPending ? <Spinner /> : 'Generate Invoice'}
                 </Button>

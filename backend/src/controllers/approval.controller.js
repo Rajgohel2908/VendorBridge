@@ -1,11 +1,13 @@
 import Approval from '../models/Approval.js';
 import Quotation from '../models/Quotation.js';
 import RFQ from '../models/RFQ.js';
+import Invoice from '../models/Invoice.js';
 import { logActivity } from '../utils/activityLogger.js';
 import { sendEmail } from '../utils/sendEmail.js';
 import User from '../models/User.js';
 import PurchaseOrder from '../models/PurchaseOrder.js';
 import { generatePONumber } from '../utils/generatePONumber.js';
+import { generateInvoiceNumber } from '../utils/generateInvoiceNumber.js';
 import mongoose from 'mongoose';
 const toDecimal = (value) => mongoose.Types.Decimal128.fromString(String(value));
 
@@ -95,7 +97,7 @@ export async function updateApproval(req, res, next) {
           const taxAmount = Math.round(subtotal * 0.18 * 100) / 100;
           const totalAmount = subtotal + taxAmount;
 
-          await PurchaseOrder.create({
+          const po = await PurchaseOrder.create({
             poNumber,
             quotationId: quotation._id,
             approvalId: approval._id,
@@ -115,9 +117,26 @@ export async function updateApproval(req, res, next) {
             status: 'GENERATED',
           });
 
+          // ✅ Auto-generate Invoice so "View Invoice" appears immediately
+          const invoiceCount = await Invoice.countDocuments();
+          const invoiceNo = generateInvoiceNumber(invoiceCount + 1);
+          const invoice = await Invoice.create({
+            invoiceNo,
+            poId: po._id,
+            vendorId: quotation.vendorId,
+            subtotal: toDecimal(subtotal),
+            tax: toDecimal(taxAmount),
+            total: toDecimal(totalAmount),
+            status: 'GENERATED',
+            emailDeliveryStatus: 'Pending',
+          });
+
+          // ✅ Link invoiceId back to the PO so PODetail shows "View Invoice"
+          await PurchaseOrder.findByIdAndUpdate(po._id, { invoiceId: invoice._id });
+
           await logActivity({
             userId: req.user.id,
-            action: 'Auto-Generated Purchase Order on Approval',
+            action: 'Auto-Generated Purchase Order and Invoice on Approval',
             entity: 'PO',
             entityId: approval._id,
           });
